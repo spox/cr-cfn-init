@@ -31,12 +31,14 @@ module CrCfnInit
       def initialize(
             @name : String,
             @command : String,
-            @test : String = "",
+            @test : String? = nil,
             @env : Process::Env = nil,
-            @cwd : (String | Nil) = nil,
+            @cwd : String? = nil,
             @ignore_errors : Bool = false,
             @wait_after_completion : Int32? = nil
           )
+        cwd = @cwd
+        @cwd = nil if cwd && cwd.empty?
         @result = nil
       end
 
@@ -45,9 +47,10 @@ module CrCfnInit
       #
       # @return [Bool]
       def should_run? : Bool
-        unless(@test.empty?)
+        test = @test
+        if(test && !test.empty?)
           Process.run(
-            @test, nil, @env, true, true, nil, nil, @cwd
+            test, nil, @env, true, true, nil, nil, nil, @cwd
           ).success?
         else
           true
@@ -75,21 +78,24 @@ module CrCfnInit
       def run
         unless(has_run?)
           @result = Process.run(
-            @command, nil, @env, true, true, nil, nil, @cwd
+            @command, nil, @env, true, true, nil, nil, nil, @cwd
           )
           wait_time = @wait_after_completion
-          if(success? && wait_time)
+          if(success? && wait_time && wait_time > 0)
             sleep(wait_time)
           end
         end
         if(!@ignore_errors && !success?)
-          raise Error::CommandFailed.new("Command returned non-zero exit code!")
+          raise Error::CommandFailed.new("Command returned non-zero exit code! (`#{@command}`)")
         else
           success?
         end
       end
 
     end
+
+    alias CommandHash = Hash(String, String | Bool | Int32 | Hash(String, String))
+    alias CommandArray = Array(CommandHash)
 
     @commands : Array(Command)
     @executed : Bool
@@ -100,19 +106,19 @@ module CrCfnInit
     #
     # @param init [Array<Hash(String, String | Bool | Int32 | Process::Env)>] commands data
     # @return [self]
-    def initialize(init : Array(Hash(String, String | Bool | Int32 | Process::Env)))
+    def initialize(init : CommandArray)
       @executed = false
       @commands = init.map do |item|
-        args = [
-          item["name"],
-          item["command"],
-          item.fetch("test", nil),
-          item.fetch("env", nil),
-          item.fetch("cwd", nil),
-          item.fetch("ignore_errors", nil),
-          item.fetch("wait_after_completion", nil)
-        ].compact
-        Command.new(*args.values_at(0, args.size - 1))
+        args = {
+          item["name"] as String,
+          item["command"] as String,
+          item.fetch("test", "") as String,
+          item.fetch("env", {} of String => String) as Process::Env,
+          item.fetch("cwd", "") as String,
+          item.fetch("ignore_errors", false) as Bool,
+          item.fetch("wait_after_completion", 0) as Int32
+        }
+        Command.new(*args)
       end.sort_by do |item|
         item.name
       end
