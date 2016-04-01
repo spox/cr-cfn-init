@@ -18,8 +18,10 @@ module CrCfnInit
     # @param init [JSON::Type, Hash(String, Array(Hash(String, String))]
     #
     # @return [self]
-    def initialize(@name : String, init : JSON::Type | Hash(String, Array(Hash(String, String))))
-      @commands = Commands.new(init.fetch("commands", Array(Hash(String, String)).new))
+    def initialize(
+          @name : String,
+          @commands : Commands = Commands.new([] of Hash(String, String))
+        )
     end
 
   end
