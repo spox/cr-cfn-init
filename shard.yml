@@ -1,0 +1,7 @@
+name: cr-cfn-init
+version: 0.1.0
+
+authors:
+  - Chris Roberts <code@chrisroberts.org>
+
+license: Apache 2.0
