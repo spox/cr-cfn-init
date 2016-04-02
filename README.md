@@ -1,26 +1,16 @@
 # cr-cfn-init
 
-TODO: Write a description here
+`cfn-init` implementation using Crystal
 
 ## Installation
 
-
-TODO: Write installation instructions here
-
-
 ## Usage
-
-
-
-TODO: Write usage instructions here
 
 ## Development
 
-TODO: Write development instructions here
-
 ## Contributing
 
-1. Fork it ( https://github.com/[your-github-name]/cr-cfn-init/fork )
+1. Fork it ( https://github.com/spox/cr-cfn-init/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
@@ -28,4 +18,4 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [[your-github-name]](https://github.com/[your-github-name]) Chris Roberts - creator, maintainer
+- [chrisroberts](https://github.com/chrisroberts) Chris Roberts - creator, maintainer
